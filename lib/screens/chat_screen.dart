@@ -36,7 +36,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context); // Close bottom sheet
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChatHistoryScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ChatHistoryScreen()),
                 );
               },
             ),
@@ -234,6 +235,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF17203A),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Row(
