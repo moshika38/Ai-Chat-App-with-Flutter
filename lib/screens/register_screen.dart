@@ -1,3 +1,4 @@
+import 'package:ai_chat_app/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_chat_app/screens/chat_screen.dart';
 
@@ -30,25 +31,21 @@ class RegisterScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.person_add_outlined,
-                        size: 40,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(
+                            Icons.person_add_outlined,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 30),
                     Text(
@@ -129,7 +126,8 @@ class RegisterScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () => Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const ChatScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const ChatScreen()),
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(20),
@@ -151,7 +149,33 @@ class RegisterScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                    // navigate to login page
+                    GestureDetector(
+                      onTap: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Already have an account?',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
