@@ -16,6 +16,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   List<MassageModel> massagesList = [];
   TextEditingController userMessage = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   final model = GenerativeModel(
       model: 'gemini-1.5-flash-latest', apiKey: dotenv.env['ApiKey'] ?? '');
@@ -34,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
         isTyping = true;
       });
       _geminiResponse(userMessage.text);
+      _scrollToBottom();
       userMessage.clear();
     }
   }
@@ -52,7 +54,18 @@ class _ChatScreenState extends State<ChatScreen> {
         massagesList.add(botData);
         isTyping = false;
       });
+      _scrollToBottom();
     }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   @override
@@ -94,14 +107,15 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   padding: const EdgeInsets.all(20),
                   itemCount: massagesList.length,
                   itemBuilder: (context, index) {
                     final massage = massagesList[index];
                     if (massage.author == "user") {
-                      return _buildUserMessage(massage.massage);
+                      return _buildUserMessage(massage.massage, massage.time);
                     } else {
-                      return _buildAIMessage(massage.massage);
+                      return _buildAIMessage(massage.massage, massage.time);
                     }
                   },
                 ),
@@ -119,63 +133,95 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildAIMessage(String message) {
+  Widget _buildAIMessage(String message, String time) {
     return Padding(
       padding: const EdgeInsets.only(right: 50, bottom: 20),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 16,
+                ),
+              ),
             ),
-          ),
-          child: Text(
-            message,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 16,
+            // massage time
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                time.split(" ")[1].split(".")[0],
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                ).copyWith(color: Colors.white.withOpacity(0.5)),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildUserMessage(String message) {
+  Widget _buildUserMessage(String message, String time) {
     return Padding(
       padding: const EdgeInsets.only(left: 50, bottom: 20),
       child: Align(
         alignment: Alignment.centerRight,
-        child: Container(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF6C63FF), Color(0xFF4CAF50)],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF6C63FF), Color(0xFF4CAF50)],
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                ),
+              ),
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
+            // massage time
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                time.split(" ")[1].split(".")[0],
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                ).copyWith(color: Colors.white.withOpacity(0.5)),
+              ),
             ),
-          ),
-          child: Text(
-            message,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
+          ],
         ),
       ),
     );
