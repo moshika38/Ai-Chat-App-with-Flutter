@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_chat_app/screens/chat_screen.dart';
 import 'package:ai_chat_app/screens/register_screen.dart';
+import 'package:ai_chat_app/constants/colors.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -8,7 +9,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF17203A),
+      backgroundColor: AppColors.primaryBackground,
       body: Stack(
         children: [
           Positioned(
@@ -19,7 +20,7 @@ class LoginScreen extends StatelessWidget {
               height: 350,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF2A3E84),
+                color: AppColors.circleBackground,
               ),
             ),
           ),
@@ -36,13 +37,13 @@ class LoginScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: AppColors.iconOverlay,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Icon(
                             Icons.chat_bubble_outline,
                             size: 40,
-                            color: Colors.white,
+                            color: AppColors.iconColor,
                           ),
                         ),
                       ],
@@ -53,15 +54,15 @@ class LoginScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white.withOpacity(0.9),
+                        color: AppColors.primaryText.withOpacity(0.9),
                         height: 1.2,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
+                    const Text(
                       'Chat with the smartest AI',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.secondaryText,
                         fontSize: 16,
                       ),
                     ),
@@ -69,38 +70,38 @@ class LoginScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: AppColors.containerOverlay,
                         borderRadius: BorderRadius.circular(25),
                       ),
-                      child: Column(
+                      child: const Column(
                         children: [
                           TextField(
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: AppColors.primaryText),
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Email',
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.3),
+                                color: AppColors.hintText,
                               ),
                               prefixIcon: Icon(
                                 Icons.email_outlined,
-                                color: Colors.white.withOpacity(0.3),
+                                color: AppColors.hintText,
                               ),
                             ),
                           ),
-                          const Divider(height: 25, color: Colors.white10),
+                          Divider(height: 25, color: AppColors.dividerColor),
                           TextField(
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: AppColors.primaryText),
                             obscureText: true,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Password',
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.3),
+                                color: AppColors.hintText,
                               ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
-                                color: Colors.white.withOpacity(0.3),
+                                color: AppColors.hintText,
                               ),
                             ),
                           ),
@@ -118,7 +119,10 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF6C63FF), Color(0xFF4CAF50)],
+                            colors: [
+                              AppColors.gradientStart,
+                              AppColors.gradientEnd
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -126,7 +130,7 @@ class LoginScreen extends StatelessWidget {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.primaryText,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -139,22 +143,23 @@ class LoginScreen extends StatelessWidget {
                       onTap: () => Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const RegisterScreen()),
+                          builder: (context) => const RegisterScreen(),
+                        ),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'Don\'t have an account?',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.primaryText,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          SizedBox(width: 5),
                           Text(
-                            'Create Account',
+                            'Create  ',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: AppColors.secondaryText,
                             ),
                           ),
                         ],
