@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"flutter":{"platforms":{"android":{"default":{"projectId":"gemini-chat-app-b5035","appId":"1:499653161689:android:eb7a3f79009ecaa2d244c8","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"gemini-chat-app-b5035","configurations":{"android":"1:499653161689:android:eb7a3f79009ecaa2d244c8"}}}}}}
+=======
+{"flutter":{"platforms":{"android":{"default":{"projectId":"gemini-chat-app-8344f","appId":"1:150400610609:android:0878f01790fe8c855c8010","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"gemini-chat-app-8344f","configurations":{"android":"1:150400610609:android:0878f01790fe8c855c8010"}}}}}}
+>>>>>>> 7ad738f41c28de2dee91559451073c2534c12800

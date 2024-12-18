@@ -53,10 +53,18 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
+<<<<<<< HEAD
     apiKey: 'AIzaSyAlWIygJtgAw0r2kpVoLCWj9HJzkABq1po',
     appId: '1:499653161689:android:eb7a3f79009ecaa2d244c8',
     messagingSenderId: '499653161689',
     projectId: 'gemini-chat-app-b5035',
     storageBucket: 'gemini-chat-app-b5035.firebasestorage.app',
+=======
+    apiKey: 'AIzaSyAoGPHyw2WZuYVSV8FgqO7D5xTM122CECY',
+    appId: '1:150400610609:android:0878f01790fe8c855c8010',
+    messagingSenderId: '150400610609',
+    projectId: 'gemini-chat-app-8344f',
+    storageBucket: 'gemini-chat-app-8344f.firebasestorage.app',
+>>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
   );
 }

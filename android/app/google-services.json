@@ -1,13 +1,23 @@
 {
   "project_info": {
+<<<<<<< HEAD
     "project_number": "499653161689",
     "project_id": "gemini-chat-app-b5035",
     "storage_bucket": "gemini-chat-app-b5035.firebasestorage.app"
+=======
+    "project_number": "150400610609",
+    "project_id": "gemini-chat-app-8344f",
+    "storage_bucket": "gemini-chat-app-8344f.firebasestorage.app"
+>>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
   },
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
         "mobilesdk_app_id": "1:499653161689:android:eb7a3f79009ecaa2d244c8",
+=======
+        "mobilesdk_app_id": "1:150400610609:android:0878f01790fe8c855c8010",
+>>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
         "android_client_info": {
           "package_name": "com.example.ai_chat_app"
         }
@@ -15,7 +25,11 @@
       "oauth_client": [],
       "api_key": [
         {
+<<<<<<< HEAD
           "current_key": "AIzaSyAlWIygJtgAw0r2kpVoLCWj9HJzkABq1po"
+=======
+          "current_key": "AIzaSyAoGPHyw2WZuYVSV8FgqO7D5xTM122CECY"
+>>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
         }
       ],
       "services": {
