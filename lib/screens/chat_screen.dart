@@ -8,7 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String? loadedRoomID;
+  const ChatScreen({
+    super.key,
+    this.loadedRoomID,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -71,19 +75,24 @@ class _ChatScreenState extends State<ChatScreen> {
                   final data = snapshot.data as List;
                   final lastRoomID = data[0];
 
-                  roomID = lastRoomID;
+                  if (widget.loadedRoomID != null &&
+                      widget.loadedRoomID!.isNotEmpty) {
+                    roomID = widget.loadedRoomID ?? "";
+                  } else {
+                    roomID = lastRoomID;
+                  }
 
                   return Column(
                     children: [
                       StreamBuilder(
-                        stream: chatProvider.getAllMessages(lastRoomID),
+                        stream: chatProvider.getAllMessages(roomID),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             final messages = snapshot.data as List;
                             listMassages = messages as List<MassageModel>;
                             return Expanded(
                               child: ListView.builder(
-                                controller: chatProvider.scrollController,
+                                reverse: false,
                                 padding: const EdgeInsets.all(20),
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {

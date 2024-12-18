@@ -66,15 +66,10 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  // manage massages
-
-  final ScrollController scrollController = ScrollController();
-
   final model = GenerativeModel(
       model: 'gemini-1.5-flash-latest', apiKey: dotenv.env['ApiKey'] ?? '');
   bool isTyping = false;
 
-  // get all massage by roomID
   Stream<List<MassageModel>> getAllMessages(String roomID) {
     return FirebaseFirestore.instance
         .collection('ChatRoom')
@@ -91,7 +86,6 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  // save user massage
   void sendMassage(String userMassage, String roomID,
       List<MassageModel> massagesList) async {
     if (userMassage.isNotEmpty) {
@@ -99,11 +93,9 @@ class ChatProvider extends ChangeNotifier {
 
       isTyping = true;
       _geminiResponse(userMassage, roomID, massagesList);
-      scrollToBottom();
     }
   }
 
-  // gemini response
   void _geminiResponse(
       String userText, String roomID, List<MassageModel> massagesList) async {
     String conversationHistory = massagesList.map((msg) {
@@ -119,21 +111,9 @@ class ChatProvider extends ChangeNotifier {
       saveMessage(roomID, response.text.toString(), "bot");
 
       isTyping = false;
-      scrollToBottom();
     }
   }
 
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    });
-  }
-
-  // clear room massages
   Future<void> clearRoomMessages(String roomID) {
     return FirebaseFirestore.instance
         .collection('ChatRoom')
@@ -147,21 +127,45 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  // delete room
   Future<void> deleteRoom(String roomID) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
-    // Delete the room document itself
     await FirebaseFirestore.instance
         .collection('ChatRoom')
         .doc(roomID)
         .delete();
 
-    // Remove roomID from user's document
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'roomID': FieldValue.arrayRemove([roomID]),
     });
+    notifyListeners();
+  }
 
-   
+  Future<List<String>> getAllRooms() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      List<dynamic> roomIDs = userDoc.get('roomID') ?? [];
+      return roomIDs.cast<String>().reversed.toList();
+    }
+    return [];
+  }
+
+  Future<String> getLastMassage(String roomID) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('ChatRoom')
+        .doc(roomID)
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final message = MassageModel.fromJson(snapshot.docs.first.data());
+      return message.massage;
+    } else {
+      return '';
+    }
   }
 }
