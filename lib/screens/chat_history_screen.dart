@@ -1,3 +1,4 @@
+import 'package:ai_chat_app/models/massege_model.dart';
 import 'package:ai_chat_app/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_chat_app/constants/colors.dart';
@@ -37,13 +38,27 @@ class ChatHistoryScreen extends StatelessWidget {
                 itemCount: rooms.length,
                 padding: const EdgeInsets.all(16),
                 itemBuilder: (context, index) {
-                  return FutureBuilder(
-                    future: chatProvider.getLastMassage(rooms[index]),
+                  return FutureBuilder<List<MassageModel>>(
+                    future:
+                        chatProvider.getAllMassagesRelevantIDs(rooms[index]),
                     builder: (context, messageSnapshot) {
-                      return HistoryCard(
-                        index: index,
-                        lastMassage: messageSnapshot.data ?? '',
-                        roomID: rooms[index],
+                      if (messageSnapshot.hasData) {
+                        final data = messageSnapshot.data!;
+                        return HistoryCard(
+                          index: index,
+                          lastMassage: data.last.massage,
+                          roomID: rooms[index],
+                          time: data.first.time,
+                        );
+                      }
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          child: Text(
+                            'Loading...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       );
                     },
                   );
@@ -67,18 +82,20 @@ class HistoryCard extends StatelessWidget {
   final int index;
   final String lastMassage;
   final String roomID;
+  final String time;
   const HistoryCard({
     super.key,
     required this.index,
     required this.lastMassage,
     required this.roomID,
+    required this.time,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChatScreen(
@@ -114,7 +131,7 @@ class HistoryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chat ${index + 1}',
+                    'Created / ${time.split(' ')[0]} ',
                     style: const TextStyle(
                       color: AppColors.primaryText,
                       fontSize: 18,
@@ -150,8 +167,8 @@ class HistoryCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Text(
-                  '2h ago',
+                Text(
+                  time.split(' ')[1].split('.')[0],
                   style: TextStyle(
                     color: AppColors.hintText,
                     fontSize: 12,

@@ -152,20 +152,28 @@ class ChatProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<String> getLastMassage(String roomID) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('ChatRoom')
-        .doc(roomID)
-        .collection('messages')
-        .orderBy('time', descending: true)
-        .limit(1)
-        .get();
+  Future<List<MassageModel>> getAllMassagesRelevantIDs(dynamic roomIDs) async {
+    List<MassageModel> messages = [];
 
-    if (snapshot.docs.isNotEmpty) {
-      final message = MassageModel.fromJson(snapshot.docs.first.data());
-      return message.massage;
-    } else {
-      return '';
+    if (roomIDs is String) {
+      roomIDs = [roomIDs];
     }
+
+    for (String roomID in roomIDs) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('ChatRoom')
+          .doc(roomID)
+          .collection('messages')
+          .orderBy('time', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final message = MassageModel.fromJson(snapshot.docs.first.data());
+        messages.add(message);
+      }
+    }
+
+    return messages;
   }
 }
