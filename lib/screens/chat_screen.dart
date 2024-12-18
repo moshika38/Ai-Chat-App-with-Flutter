@@ -40,8 +40,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 Icons.more_vert,
                 color: Colors.white.withOpacity(0.7),
               ),
-              onPressed: AppBottomSheet(context: context, roomID: roomID)
-                  .showOptionsDialog,
+              onPressed: AppBottomSheet(
+                context: context,
+                roomID: roomID,
+              ).showOptionsDialog,
             ),
           ],
         ),
@@ -68,9 +70,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   final data = snapshot.data as List;
                   final lastRoomID = data[0];
-                   
-                    roomID = lastRoomID;
-                   
+
+                  roomID = lastRoomID;
+
                   return Column(
                     children: [
                       StreamBuilder(

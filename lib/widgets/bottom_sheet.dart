@@ -26,13 +26,23 @@ class AppBottomSheet {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildOptionTile(
-              icon: Icons.add_comment_rounded,
-              title: 'New Chat',
-              onTap: () {
-                // Implement new chat logic
-                Navigator.pop(context);
-              },
+            Consumer(
+              builder: (context, ChatProvider chatProvider, child) =>
+                  _buildOptionTile(
+                icon: Icons.add_comment_rounded,
+                title: 'New Chat',
+                onTap: () async {
+                  await chatProvider.createRoom();
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(),
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
             _buildOptionTile(
               icon: Icons.history_rounded,
