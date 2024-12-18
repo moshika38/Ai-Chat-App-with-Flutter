@@ -1,12 +1,17 @@
 import 'package:ai_chat_app/constants/colors.dart';
+import 'package:ai_chat_app/providers/chat_provider.dart';
 import 'package:ai_chat_app/screens/chat_history_screen.dart';
+import 'package:ai_chat_app/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AppBottomSheet {
   final BuildContext context;
+  final String roomID;
 
   AppBottomSheet({
     required this.context,
+    required this.roomID,
   });
 
   void showOptionsDialog() {
@@ -181,14 +186,21 @@ class AppBottomSheet {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () {
-              // Implement clear chat logic
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Clear',
-              style: TextStyle(color: Colors.redAccent),
+          Consumer(
+            builder: (BuildContext context, ChatProvider chatProvider, child) =>
+                TextButton(
+              onPressed: () async {
+                if (roomID.isNotEmpty) {
+                  await chatProvider.clearRoomMessages(roomID);
+                }
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text(
+                'Clear',
+                style: TextStyle(color: Colors.redAccent),
+              ),
             ),
           ),
         ],
@@ -215,14 +227,26 @@ class AppBottomSheet {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () {
-              // Implement delete chat logic
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.redAccent),
+          Consumer(
+            builder: (BuildContext context, ChatProvider chatProvider, child) =>
+                TextButton(
+              onPressed: () async {
+                if (roomID.isNotEmpty) {
+                  await chatProvider.deleteRoom(roomID);
+                }
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(),
+                    ),
+                  );
+                }
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.redAccent),
+              ),
             ),
           ),
         ],

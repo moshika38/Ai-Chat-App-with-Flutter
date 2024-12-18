@@ -18,6 +18,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController userMessage = TextEditingController();
 
   List<MassageModel> listMassages = [];
+  String roomID = "";
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Icons.more_vert,
                 color: Colors.white.withOpacity(0.7),
               ),
-              onPressed: AppBottomSheet(context: context).showOptionsDialog,
+              onPressed: AppBottomSheet(context: context, roomID: roomID)
+                  .showOptionsDialog,
             ),
           ],
         ),
@@ -66,7 +68,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   final data = snapshot.data as List;
                   final lastRoomID = data[0];
-
+                   
+                    roomID = lastRoomID;
+                   
                   return Column(
                     children: [
                       StreamBuilder(
@@ -110,7 +114,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       TypeBar(
                         controller: userMessage,
                         onTap: () {
- 
                           chatProvider.sendMassage(userMessage.text,
                               lastRoomID.toString(), listMassages);
                           userMessage.clear();

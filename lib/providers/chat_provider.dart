@@ -31,7 +31,11 @@ class ChatProvider extends ChangeNotifier {
       List<dynamic> roomIDs = userDoc.get('roomID') ?? [];
       if (roomIDs.isEmpty) {
         await createRoom();
-        return getLastRoomId();
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(id).get();
+        List<dynamic> roomIDs = userDoc.get('roomID') ?? [];
+
+        return roomIDs.isNotEmpty ? roomIDs.last : null;
       }
       return roomIDs.isNotEmpty ? roomIDs.last : null;
     }
@@ -127,5 +131,37 @@ class ChatProvider extends ChangeNotifier {
         curve: Curves.easeOut,
       );
     });
+  }
+
+  // clear room massages
+  Future<void> clearRoomMessages(String roomID) {
+    return FirebaseFirestore.instance
+        .collection('ChatRoom')
+        .doc(roomID)
+        .collection('messages')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot doc in snapshot.docs) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  // delete room
+  Future<void> deleteRoom(String roomID) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    // Delete the room document itself
+    await FirebaseFirestore.instance
+        .collection('ChatRoom')
+        .doc(roomID)
+        .delete();
+
+    // Remove roomID from user's document
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'roomID': FieldValue.arrayRemove([roomID]),
+    });
+
+   
   }
 }
