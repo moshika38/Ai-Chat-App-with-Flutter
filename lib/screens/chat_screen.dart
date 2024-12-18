@@ -5,8 +5,6 @@ import 'package:ai_chat_app/widgets/app_bar_title.dart';
 import 'package:ai_chat_app/widgets/bottom_sheet.dart';
 import 'package:ai_chat_app/widgets/type_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -18,61 +16,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController userMessage = TextEditingController();
-  final ScrollController scrollController = ScrollController();
 
-  final model = GenerativeModel(
-      model: 'gemini-1.5-flash-latest', apiKey: dotenv.env['ApiKey'] ?? '');
-  bool isTyping = false;
-  List<MassageModel> massagesList = [];
-
-  void sendMassage(String userMassage) async {
-    if (userMassage.isNotEmpty) {
-      final data = MassageModel(
-        massage: userMassage,
-        author: "user",
-        time: DateTime.now().toString(),
-      );
-
-      massagesList.add(data);
-      isTyping = true;
-      setState(() {});
-      _geminiResponse(userMassage);
-      scrollToBottom();
-    }
-  }
-
-  void _geminiResponse(String userText) async {
-    String conversationHistory = massagesList.map((msg) {
-      return "${msg.author}: ${msg.massage}";
-    }).join('\n');
-    final content = [
-      Content.text(conversationHistory),
-      Content.text("user: $userText")
-    ];
-    final response = await model.generateContent(content);
-    if (response.text != "") {
-      final botData = MassageModel(
-        massage: response.text.toString(),
-        author: "bot",
-        time: DateTime.now().toString(),
-      );
-      massagesList.add(botData);
-
-      isTyping = false;
-      setState(() {});
-      scrollToBottom();
-    }
-  }
-
-  void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    });
-  }
+  List<MassageModel> listMassages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           title: AppBarTitle(
-            isTyping: isTyping,
+            isTyping: chatProvider.isTyping,
           ),
           actions: [
             IconButton(
@@ -121,38 +66,54 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   final data = snapshot.data as List;
                   final lastRoomID = data[0];
-                  
+
                   return Column(
                     children: [
-                      Expanded(
-                        child: ListView.builder(
-                          controller: scrollController,
-                          padding: const EdgeInsets.all(20),
-                          itemCount: massagesList.length,
-                          itemBuilder: (context, index) {
-                            final massage = massagesList[index];
-                            if (massage.author == "user") {
-                              return _buildUserMessage(
-                                massage.massage,
-                                massage.time,
-                              );
-                            } else {
-                              return _buildAIMessage(
-                                massage.massage,
-                                massage.time,
-                              );
-                            }
-                          },
-                        ),
+                      StreamBuilder(
+                        stream: chatProvider.getAllMessages(lastRoomID),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final messages = snapshot.data as List;
+                            listMassages = messages as List<MassageModel>;
+                            return Expanded(
+                              child: ListView.builder(
+                                controller: chatProvider.scrollController,
+                                padding: const EdgeInsets.all(20),
+                                itemCount: messages.length,
+                                itemBuilder: (context, index) {
+                                  final massage = messages[index];
+                                  if (massage.author == "user") {
+                                    return _buildUserMessage(
+                                      massage.massage,
+                                      massage.time,
+                                    );
+                                  } else {
+                                    return _buildAIMessage(
+                                      massage.massage,
+                                      massage.time,
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          }
+                          return Expanded(
+                            child: Center(
+                              child: Text(
+                                'Loading...',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       TypeBar(
                         controller: userMessage,
                         onTap: () {
-                          sendMassage(userMessage.text);
-                          chatProvider.saveMessage(
-                              lastRoomID.toString(), userMessage.text, "user");
+ 
+                          chatProvider.sendMassage(userMessage.text,
+                              lastRoomID.toString(), listMassages);
                           userMessage.clear();
-                          scrollToBottom();
                         },
                       ),
                     ],
