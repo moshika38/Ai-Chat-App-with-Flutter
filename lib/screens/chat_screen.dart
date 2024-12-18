@@ -1,20 +1,13 @@
 import 'package:ai_chat_app/models/massege_model.dart';
-<<<<<<< HEAD
 import 'package:ai_chat_app/providers/chat_provider.dart';
-=======
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
+import 'package:ai_chat_app/providers/user_provider.dart';
 import 'package:ai_chat_app/widgets/app_bar_title.dart';
 import 'package:ai_chat_app/widgets/bottom_sheet.dart';
 import 'package:ai_chat_app/widgets/type_bar.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:provider/provider.dart';
-=======
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -24,19 +17,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-<<<<<<< HEAD
   TextEditingController userMessage = TextEditingController();
   final ScrollController scrollController = ScrollController();
-=======
-  List<MassageModel> massagesList = [];
-  TextEditingController userMessage = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
 
   final model = GenerativeModel(
       model: 'gemini-1.5-flash-latest', apiKey: dotenv.env['ApiKey'] ?? '');
   bool isTyping = false;
-<<<<<<< HEAD
   List<MassageModel> massagesList = [];
 
   void sendMassage(String userMassage) async {
@@ -52,29 +38,10 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {});
       _geminiResponse(userMassage);
       scrollToBottom();
-=======
-
-  void _sendMassage() {
-    if (userMessage.text.isNotEmpty) {
-      final data = MassageModel(
-        id: "0",
-        massage: userMessage.text,
-        author: "user",
-        time: DateTime.now().toString(),
-      );
-      setState(() {
-        massagesList.add(data);
-        isTyping = true;
-      });
-      _geminiResponse(userMessage.text);
-      _scrollToBottom();
-      userMessage.clear();
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
     }
   }
 
   void _geminiResponse(String userText) async {
-<<<<<<< HEAD
     String conversationHistory = massagesList.map((msg) {
       return "${msg.author}: ${msg.massage}";
     }).join('\n');
@@ -85,18 +52,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final response = await model.generateContent(content);
     if (response.text != "") {
       final botData = MassageModel(
-=======
-    final content = [Content.text(userText)];
-    final response = await model.generateContent(content);
-    if (response.text != "") {
-      final botData = MassageModel(
-        id: "0",
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
         massage: response.text.toString(),
         author: "bot",
         time: DateTime.now().toString(),
       );
-<<<<<<< HEAD
       massagesList.add(botData);
 
       isTyping = false;
@@ -109,20 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
-=======
-      setState(() {
-        massagesList.add(botData);
-        isTyping = false;
-      });
-      _scrollToBottom();
-    }
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -131,9 +76,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Consumer(
-      builder: (BuildContext context, ChatProvider chatProvider, child) =>
+    return Consumer2(
+      builder: (BuildContext context, ChatProvider chatProvider,
+              UserProvider userProvider, child) =>
           Scaffold(
         backgroundColor: const Color(0xFF17203A),
         appBar: AppBar(
@@ -168,11 +113,15 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             FutureBuilder(
-              future: chatProvider.getLastRoomId(),
+              future: Future.wait([
+                chatProvider.getLastRoomId(),
+                userProvider.createCollection(),
+              ]),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final lastRoomID = snapshot.data;
-
+                  final data = snapshot.data as List;
+                  final lastRoomID = data[0];
+                  
                   return Column(
                     children: [
                       Expanded(
@@ -209,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   );
                 }
-                return const Center(
+                return Center(
                   child: Text(
                     'Updating data...',
                     style: TextStyle(color: Colors.white),
@@ -219,67 +168,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-=======
-    return Scaffold(
-      backgroundColor: const Color(0xFF17203A),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: AppBarTitle(
-          isTyping: isTyping,
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Colors.white.withOpacity(0.7),
-            ),
-            onPressed: AppBottomSheet(context: context).showOptionsDialog,
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF2A3E84),
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(20),
-                  itemCount: massagesList.length,
-                  itemBuilder: (context, index) {
-                    final massage = massagesList[index];
-                    if (massage.author == "user") {
-                      return _buildUserMessage(massage.massage, massage.time);
-                    } else {
-                      return _buildAIMessage(massage.massage, massage.time);
-                    }
-                  },
-                ),
-              ),
-              TypeBar(
-                controller: userMessage,
-                onTap: () {
-                  _sendMassage();
-                },
-              ),
-            ],
-          ),
-        ],
->>>>>>> 7ad738f41c28de2dee91559451073c2534c12800
       ),
     );
   }

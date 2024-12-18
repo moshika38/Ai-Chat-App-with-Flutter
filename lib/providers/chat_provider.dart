@@ -23,20 +23,23 @@ class ChatProvider extends ChangeNotifier {
   }
 
 Future<String?> getLastRoomId() async {
-    final id = FirebaseAuth.instance.currentUser?.uid;
+      final id = FirebaseAuth.instance.currentUser?.uid;
     
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(id)
-        .get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(id)
+          .get();
 
-    if (userDoc.exists) {
-      List<dynamic> roomIDs = userDoc.get('roomID') ?? [];
-      return roomIDs.isNotEmpty ? roomIDs.last : null;
+      if (userDoc.exists) {
+        List<dynamic> roomIDs = userDoc.get('roomID') ?? [];
+        if (roomIDs.isEmpty) {
+          await createRoom();
+          return getLastRoomId();
+        }
+        return roomIDs.isNotEmpty ? roomIDs.last : null;
+      }
+      return null;
     }
-    return null;
-  }
-
 
 
 

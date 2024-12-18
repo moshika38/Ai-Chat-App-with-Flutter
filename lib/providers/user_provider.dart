@@ -82,15 +82,19 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> createCollection() async {
     final id = FirebaseAuth.instance.currentUser?.uid;
-    try {
-      final data = UserModel(id: id.toString(), roomID: <String>[]);
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(id)
-          .set(data.toJson());
-    } catch (e) {
-      print('Error creating user: $e');
-    }
+    final docRef = FirebaseFirestore.instance.collection('users').doc(id);
+
+    // Check if the document already exists
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      // If it doesn't exist, create a new document
+      final data = UserModel(id: id.toString(), roomID: <String>[]);
+      await docRef.set(data.toJson());
+      print('User document created successfully.');
+     } else {
+      print('User document already exists.');
+     }
   }
 }
