@@ -3,6 +3,7 @@ import 'package:ai_chat_app/providers/chat_provider.dart';
 import 'package:ai_chat_app/providers/user_provider.dart';
 import 'package:ai_chat_app/widgets/app_bar_title.dart';
 import 'package:ai_chat_app/widgets/bottom_sheet.dart';
+import 'package:ai_chat_app/widgets/chat_screen_btn.dart';
 import 'package:ai_chat_app/widgets/type_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,15 @@ class _ChatScreenState extends State<ChatScreen> {
           Scaffold(
         backgroundColor: const Color(0xFF17203A),
         appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+            ),
+          ),
           automaticallyImplyLeading: false,
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -46,7 +56,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               onPressed: AppBottomSheet(
                 context: context,
-                roomID: roomID,
+                roomID: widget.loadedRoomID != null &&
+                        widget.loadedRoomID!.isNotEmpty
+                    ? widget.loadedRoomID.toString()
+                    : roomID,
               ).showOptionsDialog,
             ),
           ],
@@ -79,7 +92,20 @@ class _ChatScreenState extends State<ChatScreen> {
                       widget.loadedRoomID!.isNotEmpty) {
                     roomID = widget.loadedRoomID ?? "";
                   } else {
-                    roomID = lastRoomID;
+                    roomID = lastRoomID ?? "";
+                  }
+                  if (roomID.isEmpty) {
+                    return ChatScreenBtn(
+                      onTap: () async {
+                        await chatProvider.createRoom();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatScreen(),
+                          ),
+                        );
+                      },
+                    );
                   }
 
                   return Column(
@@ -90,6 +116,19 @@ class _ChatScreenState extends State<ChatScreen> {
                           if (snapshot.hasData) {
                             final messages = snapshot.data as List;
                             listMassages = messages as List<MassageModel>;
+                            if (messages.isEmpty) {
+                              return const Expanded(
+                                child: Center(
+                                  child: Text(
+                                    "👋 Say 'hello' to get started",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
                             return Expanded(
                               child: ListView.builder(
                                 reverse: false,
@@ -97,6 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
                                   final massage = messages[index];
+
                                   if (massage.author == "user") {
                                     return _buildUserMessage(
                                       massage.massage,

@@ -1,5 +1,6 @@
 import 'package:ai_chat_app/constants/colors.dart';
 import 'package:ai_chat_app/providers/chat_provider.dart';
+import 'package:ai_chat_app/providers/user_provider.dart';
 import 'package:ai_chat_app/screens/chat_history_screen.dart';
 import 'package:ai_chat_app/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -56,14 +57,7 @@ class AppBottomSheet {
                 );
               },
             ),
-            _buildOptionTile(
-              icon: Icons.cleaning_services_rounded,
-              title: 'Clear Chat',
-              onTap: () {
-                Navigator.pop(context);
-                _showClearChatDialog();
-              },
-            ),
+             
             _buildOptionTile(
               icon: Icons.delete_rounded,
               title: 'Delete Chat',
@@ -71,6 +65,15 @@ class AppBottomSheet {
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteChatDialog();
+              },
+            ),
+            _buildOptionTile(
+              icon: Icons.logout_rounded,
+              title: 'Log Out',
+              color: Colors.redAccent,
+              onTap: () {
+                Navigator.pop(context);
+                _logout(context);
               },
             ),
           ],
@@ -177,46 +180,7 @@ class AppBottomSheet {
     );
   }
 
-  void _showClearChatDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF17203A),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Clear Chat',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: const Text(
-          'Are you sure you want to clear this chat?',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          Consumer(
-            builder: (BuildContext context, ChatProvider chatProvider, child) =>
-                TextButton(
-              onPressed: () async {
-                if (roomID.isNotEmpty) {
-                  await chatProvider.clearRoomMessages(roomID);
-                }
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text(
-                'Clear',
-                style: TextStyle(color: Colors.redAccent),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+   
 
   void _showDeleteChatDialog() {
     showDialog(
@@ -263,4 +227,40 @@ class AppBottomSheet {
       ),
     );
   }
+}
+
+void _logout(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF17203A),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text(
+        'Log Out',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: const Text(
+        'Are you sure you want to Log out ?',
+        style: TextStyle(color: Colors.white70),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('No'),
+        ),
+        Consumer(
+          builder: (BuildContext context, UserProvider userProvider, child) =>
+              TextButton(
+            onPressed: () async {
+              userProvider.userLogout(context);
+            },
+            child: const Text(
+              'Yes',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

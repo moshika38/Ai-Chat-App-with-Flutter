@@ -10,30 +10,53 @@ class ChatHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.iconColor),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+    return Consumer<ChatProvider>(
+      builder: (BuildContext context, ChatProvider chatProvider, child) =>
+          Scaffold(
+        backgroundColor: AppColors.primaryBackground,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                color: AppColors.iconColor),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          backgroundColor: AppColors.circleBackground,
+          title: const Text(
+            'Chat History',
+            style: TextStyle(color: AppColors.primaryText),
+          ),
+          actions: [
+            chatProvider.isDel
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 30),
+                    child: SizedBox(
+                      height: 25,
+                      width: 25,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ],
         ),
-        backgroundColor: AppColors.circleBackground,
-        title: const Text(
-          'Chat History',
-          style: TextStyle(color: AppColors.primaryText),
-        ),
-      ),
-      body: Consumer<ChatProvider>(
-        builder: (BuildContext context, ChatProvider chatProvider, child) =>
-            FutureBuilder<List<String>>(
+        body: FutureBuilder<List<String>>(
           future: chatProvider.getAllRooms(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final rooms = snapshot.data!;
+
+              if (rooms.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No chat history available',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              }
               return ListView.builder(
                 itemCount: rooms.length,
                 padding: const EdgeInsets.all(16),
@@ -44,6 +67,14 @@ class ChatHistoryScreen extends StatelessWidget {
                     builder: (context, messageSnapshot) {
                       if (messageSnapshot.hasData) {
                         final data = messageSnapshot.data!;
+                        if (data.isEmpty) {
+                          return HistoryCard(
+                            index: index,
+                            lastMassage: "No chat Found",
+                            roomID: rooms[index],
+                            time: "",
+                          );
+                        }
                         return HistoryCard(
                           index: index,
                           lastMassage: data.last.massage,
@@ -83,6 +114,7 @@ class HistoryCard extends StatelessWidget {
   final String lastMassage;
   final String roomID;
   final String time;
+
   const HistoryCard({
     super.key,
     required this.index,
@@ -111,6 +143,9 @@ class HistoryCard extends StatelessWidget {
           color: AppColors.containerOverlay,
           borderRadius: BorderRadius.circular(20),
         ),
+        constraints: const BoxConstraints(
+          maxHeight: 120, // Set the maximum height for the container
+        ),
         child: Row(
           children: [
             Container(
@@ -131,7 +166,7 @@ class HistoryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Created / ${time.split(' ')[0]} ',
+                    time != "" ? 'Created / ${time.split(' ')[0]} ' : "",
                     style: const TextStyle(
                       color: AppColors.primaryText,
                       fontSize: 18,
@@ -139,11 +174,15 @@ class HistoryCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    lastMassage,
-                    style: TextStyle(
-                      color: AppColors.secondaryText,
-                      fontSize: 14,
+                  Flexible(
+                    child: Text(
+                      lastMassage,
+                      style: const TextStyle(
+                        color: AppColors.secondaryText,
+                        fontSize: 14,
+                      ),
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -158,7 +197,7 @@ class HistoryCard extends StatelessWidget {
                     onPressed: () {
                       chatProvider.deleteRoom(roomID);
                     },
-                    child: Text(
+                    child: const Text(
                       'Delete',
                       style: TextStyle(
                         color: Colors.red,
@@ -168,8 +207,8 @@ class HistoryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  time.split(' ')[1].split('.')[0],
-                  style: TextStyle(
+                  time != "" ? time.split(' ')[1].split('.')[0] : "",
+                  style: const TextStyle(
                     color: AppColors.hintText,
                     fontSize: 12,
                   ),

@@ -1,5 +1,6 @@
 import 'package:ai_chat_app/models/user_model.dart';
 import 'package:ai_chat_app/screens/chat_screen.dart';
+import 'package:ai_chat_app/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,7 +25,7 @@ class UserProvider extends ChangeNotifier {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const ChatScreen(),
+              builder: (context) => const LoginScreen(),
             ),
           );
         }
@@ -93,8 +94,32 @@ class UserProvider extends ChangeNotifier {
       final data = UserModel(id: id.toString(), roomID: <String>[]);
       await docRef.set(data.toJson());
       print('User document created successfully.');
-     } else {
+    } else {
       print('User document already exists.');
-     }
+    }
+  }
+
+  // user logout
+  Future<void> userLogout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }
   }
 }
