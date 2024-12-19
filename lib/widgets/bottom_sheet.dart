@@ -38,7 +38,7 @@ class AppBottomSheet {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatScreen(),
+                        builder: (context) => const ChatScreen(),
                       ),
                     );
                   }
@@ -101,7 +101,7 @@ class AppBottomSheet {
     );
   }
 
-  void _showChatHistory() {
+  void showChatHistory() {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF17203A),
@@ -212,7 +212,7 @@ class AppBottomSheet {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChatScreen(),
+                      builder: (context) => const ChatScreen(),
                     ),
                   );
                 }

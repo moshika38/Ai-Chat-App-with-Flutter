@@ -37,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
               color: Colors.white,
             ),
@@ -101,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatScreen(),
+                            builder: (context) => const ChatScreen(),
                           ),
                         );
                       },
@@ -152,7 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             );
                           }
-                          return Expanded(
+                          return const Expanded(
                             child: Center(
                               child: Text(
                                 'Loading...',
@@ -173,7 +173,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   );
                 }
-                return Center(
+                return const Center(
                   child: Text(
                     'Updating data...',
                     style: TextStyle(color: Colors.white),

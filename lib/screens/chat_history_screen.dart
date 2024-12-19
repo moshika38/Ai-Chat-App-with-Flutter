@@ -30,17 +30,17 @@ class ChatHistoryScreen extends StatelessWidget {
           ),
           actions: [
             chatProvider.isDel
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 30),
+                ? const Padding(
+                    padding: EdgeInsets.only(right: 35),
                     child: SizedBox(
-                      height: 25,
-                      width: 25,
+                      height: 20,
+                      width: 20,
                       child: CircularProgressIndicator(
                         color: Colors.white,
                       ),
                     ),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ],
         ),
         body: FutureBuilder<List<String>>(

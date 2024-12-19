@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class ChatProvider extends ChangeNotifier {
+  
   Future<String> createRoom() async {
     final newRoom =
         await FirebaseFirestore.instance.collection('ChatRoom').add({});
@@ -117,23 +118,13 @@ class ChatProvider extends ChangeNotifier {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     try {
-      // Delete the chats in the sub-collection
-      final messagesCollection = FirebaseFirestore.instance
-          .collection('ChatRoom')
-          .doc(roomID)
-          .collection('Messages');
-
-      final messagesSnapshot = await messagesCollection.get();
-
-      for (var doc in messagesSnapshot.docs) {
-        await doc.reference.delete();
-      }
-
       // Delete the room document
       await FirebaseFirestore.instance
           .collection('ChatRoom')
           .doc(roomID)
           .delete();
+
+      print("delete room id is ===================$roomID");
 
       // Remove room ID from user's document
       if (userId != null) {
@@ -145,25 +136,10 @@ class ChatProvider extends ChangeNotifier {
         });
       }
 
-      // Verify and clean up if room document still exists
-      final roomDoc = await FirebaseFirestore.instance
-          .collection('ChatRoom')
-          .doc(roomID)
-          .get();
-
-      if (roomDoc.exists) {
-        await FirebaseFirestore.instance
-            .collection('ChatRoom')
-            .doc(roomID)
-            .delete();
-      }
-
-      // Notify listeners if using Provider or similar state management
       isDel = false;
       notifyListeners();
     } catch (e) {
       isDel = false;
-      notifyListeners();
       print('Error deleting room and its messages: $e');
     }
   }

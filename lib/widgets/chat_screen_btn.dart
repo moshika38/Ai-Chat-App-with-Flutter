@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ChatScreenBtn extends StatelessWidget {
   final VoidCallback onTap;
-  const ChatScreenBtn({
+   const ChatScreenBtn({
     super.key,
     required this.onTap,
   });
@@ -24,7 +24,7 @@ class ChatScreenBtn extends StatelessWidget {
                 colors: [AppColors.gradientStart, AppColors.gradientEnd],
               ),
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.add_comment_outlined, color: Colors.white),

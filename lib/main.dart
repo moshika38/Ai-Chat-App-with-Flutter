@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C63FF),
           secondary: const Color(0xFF03DAC5),
-          background: const Color(0xFFF5F5F7),
+           
         ),
         useMaterial3: true,
         fontFamily: 'Poppins',
